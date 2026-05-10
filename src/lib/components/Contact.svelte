@@ -28,7 +28,7 @@
     // Open mail client as fallback
     const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-    window.open(`mailto:abdurrahamanjamiu@email.com?subject=${subject}&body=${body}`);
+    window.open(`mailto:abduurrahamanjamiu75@outlook.com?subject=${subject}&body=${body}`);
 
     status = 'success';
     name = ''; email = ''; message = '';
@@ -38,8 +38,8 @@
   }
 </script>
 
-<section id="contact" class="py-24 bg-white dark:bg-slate-950">
-  <div class="max-w-3xl mx-auto px-6">
+<section id="contact" class="py-24 bg-white dark:bg-slate-950 flex flex-col items-center justify-center">
+  <div class="w-full max-w-3xl mx-auto px-6">
     <div class="text-center mb-16">
       <span class="text-indigo-500 font-semibold text-sm uppercase tracking-widest">Get In Touch</span>
       <h2 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mt-2">
@@ -50,11 +50,12 @@
       </p>
     </div>
 
-    <div class="flex flex-col gap-16">
+    <div class="flex flex-col items-center gap-16">
       
+      <!-- Form container -->
       <form
         onsubmit={handleSubmit}
-        class="space-y-6 bg-slate-50 dark:bg-slate-900/50 p-8 md:p-10 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm"
+        class="w-full mx-auto space-y-6 bg-slate-50 dark:bg-slate-900/50 p-8 md:p-10 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm"
         novalidate
       >
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -124,22 +125,24 @@
         </button>
       </form>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <!-- Updated social links grid with Instagram and cleaner responsive layout -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-3xl">
         {#each [
           { icon: '✉️', label: 'Email', value: 'Mail', href: 'mailto:abduurrahamanjamiu75@outlook.com' },
-          { icon: '💼', label: 'LinkedIn', value: 'LinkedIn', href: 'https://www.linkedin.com/in/abdurrahaman-jamiu-14131524b/?utm_source=share_via&utm_content=profile&utm_medium=member_ios' },
+          { icon: '💼', label: 'LinkedIn', value: 'LinkedIn', href: 'https://www.linkedin.com/in/abdurrahaman-jamiu-14131524b/' },
+          { icon: '📸', label: 'Instagram', value: 'Instagram', href: 'https://www.instagram.com/theeabdurrahaman.dev?igsh=M3l2eHIyMWtra2hn&utm_source=qr' },
           { icon: '⌨️', label: 'GitHub', value: 'GitHub', href: 'https://github.com/masterultron' },
         ] as item}
           <a
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="flex flex-col items-center text-center gap-3 p-6 bg-transparent rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800 group"
+            class="flex flex-col items-center text-center gap-2 p-4 bg-transparent rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800 group"
           >
-            <span class="text-3xl mb-1">{item.icon}</span>
+            <span class="text-2xl mb-1">{item.icon}</span>
             <div>
-              <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">{item.label}</p>
-              <p class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1">{item.label}</p>
+              <p class="text-sm text-slate-700 dark:text-slate-300 font-semibold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {item.value}
               </p>
             </div>

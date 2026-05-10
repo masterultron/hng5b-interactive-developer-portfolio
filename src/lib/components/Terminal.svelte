@@ -1,45 +1,42 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { tick } from 'svelte';
+  import { onMount, tick } from 'svelte';
 
   interface Line {
     type: 'input' | 'output' | 'error' | 'success';
     text: string;
   }
 
-  let input = '';
-  let lines: Line[] = [];
-  let terminalEl: HTMLDivElement;
-  let inputEl: HTMLInputElement;
-  let history: string[] = [];
-  let historyIndex = -1;
+  let input = $state('');
+  let lines = $state<Line[]>([]);
+  let terminalEl = $state<HTMLDivElement>();
+  let inputEl = $state<HTMLInputElement>();
+  let history = $state<string[]>([]);
+  let historyIndex = $state(-1);
 
   const commands: Record<string, () => string | string[]> = {
     help: () => [
       '┌─────────────────────────────────────┐',
       '│  Available Commands                 │',
       '├─────────────────────────────────────┤',
-      '│  about       → About me             │',
-      '│  skills      → My tech stack        │',
-      '│  projects    → My projects          │',
-      '│  contact     → Contact info         │',
-      '│  experience  → Work experience      │',
-      '│  education   → Education            │',
-      '│  clear       → Clear terminal       │',
-      '│  help        → Show this menu       │',
+      '│  about      → About me              │',
+      '│  skills     → My tech stack         │',
+      '│  projects   → My projects           │',
+      '│  contact    → Contact info          │',
+      '│  experience → Work experience       │',
+      '│  education  → Education             │',
+      '│  clear      → Clear terminal        │',
+      '│  help       → Show this menu        │',
       '└─────────────────────────────────────┘',
     ],
     about: () => [
-      '👤 About Me',
+      'About Me',
       '──────────────────────────────────────',
       'Name    : Abdurrahaman Jamiu',
       'Title   : Frontend Engineer',
-      'Location: Abuja, Nigeria 🇳🇬',
-      'Status  : Available for work ✅',
+      'Location: Abuja, Nigeria',
+      'Status  : Available for work ',
       '',
-      'I build immersive web experiences with',
-      'modern tools. Passionate about perf,',
-      'accessibility, and beautiful UIs.',
+      'I build immersive web experiences with modern tools. Passionate about performance, accessibility, security, and beautiful UIs.',
     ],
     skills: () => [
       '⚡ Tech Stack',
@@ -67,10 +64,10 @@
     contact: () => [
       '📬 Contact',
       '──────────────────────────────────────',
-      'Email  : you@email.com',
-      'GitHub : github.com/masterultron',
-      'Twitter: @j_abdvvl',
-      'LinkedIn: linkedin.com/in/abdurrahamanjamiu',
+      'Email    : abduurrahamanjamiu75@outlook.com',
+      'GitHub   : github.com/masterultron',
+      'Instagram: @theeabdurrahaman.dev',
+      'LinkedIn : linkedin.com/in/abdurrahaman-jamiu-14131524b',
       '',
       '→ Open to freelance & full-time roles',
     ],
@@ -78,20 +75,22 @@
       '💼 Experience',
       '──────────────────────────────────────',
       '2024 - Present',
-      '  Frontend Developer @ Company Name',
-      '  Built enterprise web applications',
+      '  Frontend Developer @ Freelance/Contract',
+      '  Building enterprise-grade web solutions',
       '',
       '2023 - 2024',
-      '  Junior Developer @ Startup Name',
-      '  Developed React + Node.js apps',
+      '  Frontend Engineer',
+      '  Specialized in Svelte and React ecosystems',
     ],
     education: () => [
       '🎓 Education',
       '──────────────────────────────────────',
-      'B.Sc. Computer Science',
-      'University Name, 2023',
+      'B.Eng. Computer Engineering',
+      'Federal University of Technology Minna, 2025',
       '',
       'Certifications:',
+      '▸ Diploma in Java - NIIT',
+      '▸ Software Engineering - ALX',
       '▸ HNG Frontend Wizard (Stage 5)',
       '▸ Web Security Fundamentals',
     ],
@@ -118,11 +117,7 @@
 
     if (base === 'open' && args[0]) {
       const num = parseInt(args[0]);
-      const projectNames = [
-        'whisperbox', 'ai-summarizer', 'ajoke-gold',
-        'habit-tracker', 'invoice-app', 'fal360'
-      ];
-      if (num >= 1 && num <= projectNames.length) {
+      if (num >= 1 && num <= 6) {
         lines = [...lines, { type: 'success', text: `→ Opening project ${num}...` }];
         setTimeout(() => {
           document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -184,13 +179,11 @@
   }
 
   onMount(() => {
-    // Boot sequence
-    const bootLines = [
-      { type: 'success' as const, text: '  ██████╗  ██████╗ ██████╗ ████████╗███████╗ ██████╗ ██╗     ██╗  ██████╗ ' },
-      { type: 'success' as const, text: 'Welcome to Abdurrahaman Portfolio Terminal v1.0.0' },
-      { type: 'output' as const, text: '──────────────────────────────────────────────' },
-      { type: 'output' as const, text: 'Type "help" to see available commands.' },
-      { type: 'output' as const, text: '' },
+    const bootLines: Line[] = [
+      { type: 'success', text: 'Welcome to Abdurrahaman Portfolio Terminal v1.0.0' },
+      { type: 'output', text: '──────────────────────────────────────────────' },
+      { type: 'output', text: 'Type "help" to see available commands.' },
+      { type: 'output', text: '' },
     ];
 
     bootLines.forEach((line, i) => {
@@ -201,36 +194,39 @@
   });
 </script>
 
-<section id="terminal" class="py-24 bg-gray-50 dark:bg-gray-900">
-  <div class="max-w-4xl mx-auto px-6">
+<section id="terminal" class="py-24 bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center">
+  <div class="w-full max-w-6xl mx-auto px-6 flex flex-col items-center">
+    
     <div class="text-center mb-12">
       <span class="text-indigo-500 font-semibold text-sm uppercase tracking-widest">Interactive</span>
       <h2 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mt-2">
         Terminal
       </h2>
-      <p class="text-gray-500 dark:text-gray-500 mt-4">
+      <p class="text-gray-500 dark:text-gray-500 mt-4 max-w-lg mx-auto">
         Explore my portfolio through an interactive terminal. Type <code class="text-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded">help</code> to get started.
       </p>
     </div>
 
     <!-- Terminal window -->
-    <div class="bg-gray-900 dark:bg-gray-950 rounded-2xl overflow-hidden shadow-2xl border border-gray-700 dark:border-gray-800">
+    <div class="w-full bg-gray-900 dark:bg-gray-950 rounded-3xl overflow-hidden shadow-2xl border border-gray-700 dark:border-gray-800">
       <!-- Title bar -->
-      <div class="bg-gray-800 dark:bg-gray-900 px-4 py-3 flex items-center gap-2 border-b border-gray-700">
+      <div class="bg-gray-800 dark:bg-gray-900 px-6 py-4 flex items-center gap-2 border-b border-gray-700">
         <div class="flex gap-2">
-          <div class="w-3 h-3 rounded-full bg-red-500" />
-          <div class="w-3 h-3 rounded-full bg-yellow-500" />
-          <div class="w-3 h-3 rounded-full bg-green-500" />
+          <div class="w-3.5 h-3.5 rounded-full bg-red-500 shadow-inner" />
+          <div class="w-3.5 h-3.5 rounded-full bg-yellow-500 shadow-inner" />
+          <div class="w-3.5 h-3.5 rounded-full bg-green-500 shadow-inner" />
         </div>
-        <span class="ml-2 text-gray-400 text-sm font-mono">portfolio — terminal</span>
-        <span class="ml-auto text-xs text-gray-600 font-mono">bash</span>
+        <span class="ml-4 text-gray-400 text-sm font-mono tracking-tight">portfolio — bash</span>
+        <span class="ml-auto text-xs text-gray-600 font-mono">1280x720</span>
       </div>
 
       <!-- Terminal body -->
       <div
         bind:this={terminalEl}
-        class="p-6 font-mono text-sm h-96 overflow-y-auto space-y-1"
-        on:click={() => inputEl?.focus()}
+        class="px-8 md:px-12 py-8 font-mono text-sm md:text-base h-[500px] md:h-[600px] overflow-y-auto space-y-2 cursor-text scrollbar-thin scrollbar-thumb-gray-700"
+        onclick={() => inputEl?.focus()}
+        onkeydown={(e) => { if(e.key === 'Enter') inputEl?.focus() }}
+        role="presentation"
       >
         {#each lines as line}
           <div class="{
@@ -244,7 +240,7 @@
         {/each}
 
         <!-- Input line -->
-        <div class="flex items-center gap-2 text-indigo-400">
+        <div class="flex items-center gap-3 text-indigo-400">
           <span class="flex-shrink-0">
             <span class="text-green-400">Abdurrahaman</span>
             <span class="text-gray-500">@</span>
@@ -254,7 +250,7 @@
           <input
             bind:this={inputEl}
             bind:value={input}
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
             class="flex-1 bg-transparent outline-none text-gray-200 caret-indigo-400 min-w-0"
             autocomplete="off"
             autocorrect="off"
@@ -266,7 +262,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-gray-400 dark:text-gray-600 mt-4">
+    <p class="text-center text-sm text-gray-400 dark:text-gray-600 mt-8">
       💡 Pro tip: Use ↑↓ arrows for history, Tab for autocomplete
     </p>
   </div>

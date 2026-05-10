@@ -2,16 +2,16 @@
   import { onMount } from 'svelte';
   import { fly, fade } from 'svelte/transition';
 
-  let visible = false;
-  let typewriterText = '';
-  let canvasEl: HTMLCanvasElement;
-  let mouseX = 0;
-  let mouseY = 0;
+  // Svelte 5 State Runes
+  let visible = $state(false);
+  let typewriterText = $state('');
+  let canvasEl: HTMLCanvasElement | undefined = $state();
+  let mouseX = $state(0);
+  let mouseY = $state(0);
 
   const roles = [
-    'Frontend Engineer',
-    'UI/UX Developer', 
-    'Full Stack Builder',
+    'Frontend Engineer', 
+    'Partly Full Stack',
     'Creative Developer',
   ];
 
@@ -39,6 +39,7 @@
   }
 
   function initCanvas() {
+    if (!canvasEl) return;
     const canvas = canvasEl;
     const ctx = canvas.getContext('2d')!;
     let w = 0, h = 0;
@@ -54,10 +55,15 @@
     };
 
     const createParticles = () => {
-      particles = Array.from({ length: 60 }, () => {
+      particles = Array.from({ length: 150 }, () => {
         const x = Math.random() * w;
         const y = Math.random() * h;
-        return { x, y, ox: x, oy: y, vx: 0, vy: 0, size: Math.random() * 1.5 + 0.5, hue: Math.random() * 60 + 220 };
+        return { 
+          x, y, ox: x, oy: y, 
+          vx: 0, vy: 0, 
+          size: Math.random() * 1.5 + 0.5, 
+          hue: Math.random() * 60 + 220 
+        };
       });
     };
 
@@ -89,15 +95,14 @@
         ctx.fill();
       });
 
-      // Draw connections
       particles.forEach((a, i) => {
-        particles.slice(i + 1, i + 5).forEach(b => {
+        particles.slice(i + 1, i + 6).forEach(b => {
           const d = Math.hypot(a.x - b.x, a.y - b.y);
-          if (d < 80) {
+          if (d < 70) {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(99,102,241,${0.15 * (1 - d / 80)})`;
+            ctx.strokeStyle = `rgba(99,102,241,${0.12 * (1 - d / 70)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -110,7 +115,10 @@
     resize();
     draw();
     window.addEventListener('resize', resize);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+    return () => { 
+      cancelAnimationFrame(animId); 
+      window.removeEventListener('resize', resize); 
+    };
   }
 
   function handleMouseMove(e: MouseEvent) {
@@ -131,27 +139,28 @@
 
 <section
   id="hero"
-  class="relative min-h-screen flex items-center overflow-hidden mesh-gradient noise"
-  on:mousemove={handleMouseMove}
+  role="region"
+  aria-label="Interactive Hero Landing"
+  class="relative min-h-screen flex items-center overflow-hidden mesh-gradient noise bg-slate-950"
+  onmousemove={handleMouseMove}
 >
-  <!-- Interactive canvas -->
   <canvas
     bind:this={canvasEl}
     class="absolute inset-0 w-full h-full"
     aria-hidden="true"
-  />
+  ></canvas>
 
-  <!-- Content -->
   <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-12">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+    <!-- Grid alignment updated to justify-items-center -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center justify-items-center min-h-[80vh]">
 
-      <!-- Left: Text content -->
-      <div>
+      <!-- Left: Text content (Centralized on mobile/tablet, aligned on desktop) -->
+      <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
         {#if visible}
           <!-- Availability badge -->
           <div
-            in:fly={{ x: -30, duration: 700, delay: 200 }}
-            class="inline-flex items-center gap-2.5 glass rounded-full px-4 py-2 mb-8"
+            in:fly={{ y: 20, duration: 700, delay: 200 }}
+            class="inline-flex items-center gap-2.5 glass rounded-full px-4 py-2 mb-8 border border-white/10"
           >
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -162,7 +171,7 @@
 
           <!-- Main heading -->
           <h1
-            in:fly={{ x: -30, duration: 700, delay: 400 }}
+            in:fly={{ y: 20, duration: 700, delay: 400 }}
             class="text-5xl md:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-tight mb-6"
           >
             Building<br />
@@ -170,10 +179,10 @@
             experiences
           </h1>
 
-          <!-- Typewriter -->
+          <!-- Typewriter (Centralized alignment) -->
           <div
-            in:fly={{ x: -30, duration: 700, delay: 600 }}
-            class="flex items-center gap-3 mb-6"
+            in:fly={{ y: 20, duration: 700, delay: 600 }}
+            class="flex items-center justify-center lg:justify-start gap-3 mb-6"
           >
             <span class="w-8 h-px bg-indigo-500"></span>
             <span class="text-xl md:text-2xl text-indigo-400 font-semibold font-mono">
@@ -181,42 +190,43 @@
             </span>
           </div>
 
-          <!-- Description -->
+          <!-- Description (mx-auto for centering) -->
           <p
-            in:fly={{ x: -30, duration: 700, delay: 800 }}
-            class="text-lg text-slate-400 max-w-lg leading-relaxed mb-10"
+            in:fly={{ y: 20, duration: 700, delay: 800 }}
+            class="text-lg text-slate-400 max-w-lg leading-relaxed mb-10 mx-auto lg:mx-0"
           >
             I craft immersive web experiences where design meets engineering.
             Specializing in React, Svelte, and modern tooling to build
             products people love.
           </p>
 
-          <!-- CTAs -->
+          <!-- CTAs (Centered grouping) -->
           <div
-            in:fly={{ x: -30, duration: 700, delay: 1000 }}
-            class="flex flex-wrap gap-4 mb-12"
+            in:fly={{ y: 20, duration: 700, delay: 1000 }}
+            class="flex flex-wrap justify-center lg:justify-start gap-4 mb-12"
           >
-            
+            <a
               href="#projects"
-              on:click|preventDefault={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
-              class="group relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 glow overflow-hidden"
+              onclick={(e) => { e.preventDefault(); document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' }); }}
+              class="group relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 overflow-hidden shadow-lg shadow-indigo-500/25"
             >
               <span class="relative z-10">View Projects</span>
-              <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
             
+            <a
               href="#contact"
-              on:click|preventDefault={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onclick={(e) => { e.preventDefault(); document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }); }}
               class="px-8 py-4 glass text-white font-bold rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/20"
             >
               Get In Touch
             </a>
           </div>
 
-          <!-- Stats -->
+          <!-- Stats (Centered row) -->
           <div
             in:fade={{ duration: 700, delay: 1200 }}
-            class="flex items-center gap-8"
+            class="flex items-center justify-center lg:justify-start gap-8"
           >
             {#each [
               { value: '7+', label: 'Projects Built' },
@@ -238,33 +248,29 @@
           in:fly={{ x: 50, duration: 900, delay: 600 }}
           class="hidden lg:flex items-center justify-center relative"
         >
-          <!-- Floating tech cards -->
           <div class="relative w-80 h-80">
-            <!-- Card 1 -->
-            <div class="absolute top-0 right-0 glass rounded-2xl p-5 w-44 animate-float-slow">
+            <div class="absolute top-0 right-0 glass rounded-2xl p-5 w-44 animate-float-slow border border-white/10">
               <div class="text-2xl mb-2">⚛️</div>
               <div class="text-sm font-bold text-white">React</div>
               <div class="text-xs text-slate-400">Expert Level</div>
               <div class="mt-2 h-1 bg-slate-700 rounded-full">
-                <div class="h-1 bg-indigo-500 rounded-full w-[95%]" />
+                <div class="h-1 bg-indigo-500 rounded-full w-[95%]"></div>
               </div>
             </div>
-            <!-- Card 2 -->
-            <div class="absolute bottom-8 left-0 glass rounded-2xl p-5 w-44 animate-float-medium">
+            <div class="absolute bottom-8 left-0 glass rounded-2xl p-5 w-44 animate-float-medium border border-white/10">
               <div class="text-2xl mb-2">🔥</div>
               <div class="text-sm font-bold text-white">Svelte</div>
               <div class="text-xs text-slate-400">Advanced</div>
               <div class="mt-2 h-1 bg-slate-700 rounded-full">
-                <div class="h-1 bg-purple-500 rounded-full w-[80%]" />
+                <div class="h-1 bg-purple-500 rounded-full w-[80%]"></div>
               </div>
             </div>
-            <!-- Card 3 -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass rounded-2xl p-5 w-40 animate-float-fast">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass rounded-2xl p-5 w-40 animate-float-fast border border-white/10">
               <div class="text-2xl mb-2">🔐</div>
               <div class="text-sm font-bold text-white">Security</div>
               <div class="text-xs text-slate-400">E2EE Expert</div>
               <div class="mt-2 h-1 bg-slate-700 rounded-full">
-                <div class="h-1 bg-emerald-500 rounded-full w-[85%]" />
+                <div class="h-1 bg-emerald-500 rounded-full w-[85%]"></div>
               </div>
             </div>
           </div>
@@ -273,10 +279,9 @@
     </div>
   </div>
 
-  <!-- Scroll indicator -->
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500">
     <div class="w-5 h-8 border border-slate-600 rounded-full flex justify-center pt-1.5">
-      <div class="w-0.5 h-2 bg-indigo-500 rounded-full animate-bounce" />
+      <div class="w-0.5 h-2 bg-indigo-500 rounded-full animate-bounce"></div>
     </div>
   </div>
 </section>
@@ -297,4 +302,31 @@
   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
   .animate-float-medium { animation: float-medium 4s ease-in-out infinite 1s; }
   .animate-float-fast { animation: float-fast 5s ease-in-out infinite 2s; }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+  }
 </style>

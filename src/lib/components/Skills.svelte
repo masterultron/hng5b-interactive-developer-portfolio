@@ -11,7 +11,6 @@
 
   const categories = ['all', 'frontend', 'backend', 'tools'];
 
-  // Svelte 5 derived state replaces the old $: syntax
   let filteredSkills = $derived(
     activeCategory === 'all' 
       ? skills 
@@ -31,12 +30,15 @@
   });
 </script>
 
+<!-- Added items-center to the section to force horizontal centering -->
 <section
   id="skills"
   bind:this={sectionEl}
-  class="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+  class="min-h-screen flex flex-col items-center justify-center py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden"
 >
-  <div class="max-w-6xl mx-auto px-6">
+  <div class="w-full max-w-6xl mx-auto px-6 flex flex-col items-center">
+    
+    <!-- Header Section: text-center ensures the text itself is centered -->
     <div class="text-center mb-16">
       <span class="text-indigo-500 font-semibold text-sm uppercase tracking-widest">Expertise</span>
       <h2 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mt-2">
@@ -47,13 +49,14 @@
       </p>
     </div>
 
-    <div class="flex flex-wrap justify-center gap-3 mb-12">
+    <!-- Filter Buttons: Added w-max and whitespace-nowrap to match your Projects section -->
+    <div class="flex flex-wrap justify-center gap-3 mb-16">
       {#each categories as cat}
         <button
           onclick={() => activeCategory = cat}
-          class="px-5 py-2 rounded-full text-sm font-medium capitalize transition-all {
+          class="px-8 py-2.5 rounded-full text-sm font-bold capitalize transition-all duration-300 whitespace-nowrap w-max {
             activeCategory === cat
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+              ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/25'
               : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:border-indigo-500 border border-gray-200 dark:border-gray-700'
           }"
         >
@@ -62,7 +65,8 @@
       {/each}
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 w-full">
       {#each filteredSkills as skill, i (skill.name)}
         <div
           animate:flip={{ duration: 400 }}
@@ -87,13 +91,14 @@
       {/each}
     </div>
 
-    <div class="text-center">
-      <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-6">Also familiar with</h3>
+    <!-- Familiar Tags Section -->
+    <div class="text-center w-full">
+      <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-8">Also familiar with</h3>
       <div class="flex flex-wrap justify-center gap-3">
         {#each techTags as tag, i}
           <span
             in:fade={{ delay: 500 + (i * 30) }}
-            class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-sm text-gray-600 dark:text-gray-400 hover:border-indigo-400 hover:text-indigo-500 transition-all cursor-default"
+            class="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400 hover:border-indigo-400 hover:text-indigo-500 transition-all cursor-default shadow-sm"
           >
             {tag}
           </span>

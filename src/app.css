@@ -25,6 +25,22 @@ body {
   transition: background-color 0.5s ease;
 }
 
+/* =========================================
+   PAGE CENTRALIZATION LAYOUTS
+   ========================================= */
+
+/* 1. Standard Centralized Container (Max width, horizontally centered) */
+.page-container {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* 2. Absolute Dead-Center (Horizontally and vertically centered) */
+.page-center-absolute {
+  @apply min-h-screen flex flex-col items-center justify-center w-full px-4;
+}
+
+/* ========================================= */
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }

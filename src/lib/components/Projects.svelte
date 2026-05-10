@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import { projects } from '$lib/data/projects';
   import type { Project } from '$lib/data/projects';
   import { fade, fly } from 'svelte/transition';
 
-  let activeFilter: string = 'all';
-  let selectedProject: Project | null = null;
+  let activeFilter = $state('all');
+  let selectedProject = $state<Project | null>(null);
 
   const filters = [
     { id: 'all', label: 'All Work' },
@@ -14,200 +15,123 @@
     { id: 'tool', label: 'Tools' },
   ];
 
-  $: filtered = activeFilter === 'all'
-    ? projects
-    : activeFilter === 'featured'
-    ? projects.filter(p => p.featured)
-    : projects.filter(p => p.category === activeFilter);
+  let filtered = $derived(
+    activeFilter === 'all'
+      ? projects
+      : activeFilter === 'featured'
+      ? projects.filter(p => p.featured)
+      : projects.filter(p => p.category === activeFilter)
+  );
 </script>
 
-<section id="projects" class="bg-white dark:bg-[#0f172a]">
-  <div class="max-w-7xl mx-auto px-6 py-24 md:py-32">
+<!-- Added 'items-center' and 'text-center' to parent to ensure total centralization -->
+<section id="projects" class="bg-white dark:bg-[#0f172a] min-h-screen flex items-center justify-center py-24">
+  <div class="w-full max-w-7xl mx-auto px-6 flex flex-col items-center">
 
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
-      <div>
-        <span class="text-indigo-500 font-semibold text-sm uppercase tracking-[0.2em]">Selected Work</span>
-        <h2 class="text-5xl md:text-6xl font-black text-slate-900 dark:text-white mt-2 leading-tight">
-          Projects that<br />
-          <span class="gradient-text">ship & scale</span>
-        </h2>
-      </div>
-
-      <!-- Filters -->
-      <div class="flex flex-wrap gap-2">
-        {#each filters as filter}
-          <button
-            on:click={() => activeFilter = filter.id}
-            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {
-              activeFilter === filter.id
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-            }"
-          >
-            {filter.label}
-          </button>
-        {/each}
-      </div>
+    <!-- Header Section: Centralized text -->
+    <div class="text-center mb-16">
+      <span class="text-indigo-500 font-semibold text-sm uppercase tracking-[0.2em]">Selected Work</span>
+      <h2 class="text-5xl md:text-6xl font-black text-slate-900 dark:text-white mt-2 leading-tight">
+        Projects that <span class="gradient-text">ship & scale</span>
+      </h2>
     </div>
 
-    <!-- Bento Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-auto">
-      {#each filtered as project, i (project.id)}
-        <article
-          class="group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl {
-            i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''
+    <!-- Filter Buttons: Adjusted px and whitespace to ensure full wrap -->
+    <div class="flex flex-wrap justify-center gap-3 mb-20">
+      {#each filters as filter}
+        <button
+          onclick={() => activeFilter = filter.id}
+          class="px-8 py-2.5 rounded-full text-sm font-bold whitespace-nowrap w-max transition-all duration-300 {
+            activeFilter === filter.id
+              ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-slate-700'
           }"
-          style="min-height: {i === 0 ? '480px' : '280px'}"
-          on:click={() => selectedProject = project}
-          on:keydown={(e) => e.key === 'Enter' && (selectedProject = project)}
-          tabindex="0"
-          role="button"
-          aria-label="View {project.title}"
         >
-          <!-- Background gradient -->
-          <div class="absolute inset-0 bg-gradient-to-br {project.color} opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
+          {filter.label}
+        </button>
+      {/each}
+    </div>
 
-          <!-- Noise texture -->
-          <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,...')" />
-
-          <!-- Big emoji -->
-          <div class="absolute top-6 right-6 text-5xl md:text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500 select-none">
-            {project.emoji}
+    <!-- Grid: Standardized columns for a clean card look -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 w-full">
+      {#each filtered as project (project.id)}
+        <button
+          class="group flex flex-col items-center text-center outline-none"
+          onclick={() => selectedProject = project}
+        >
+          <!-- The Image "Card" -->
+          <div class="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden mb-6 shadow-sm border border-slate-100 dark:border-slate-800 transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-2 group-hover:border-indigo-200 dark:group-hover:border-indigo-900">
+            <img 
+              src="{base}{project.image}" 
+              alt={project.title} 
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <!-- Subtle Overlay on Hover -->
+            <div class="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/10 transition-colors duration-500" />
           </div>
 
-          <!-- Content -->
-          <div class="relative z-10 p-7 h-full flex flex-col justify-end">
-            <!-- Year badge -->
-            <span class="inline-block mb-3 text-xs font-bold text-white/70 uppercase tracking-widest">
-              {project.year}
+          <!-- Text Underneath -->
+          <div class="px-4">
+            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-2 block">
+              {project.category}
             </span>
-
-            <h3 class="text-xl md:text-2xl font-black text-white mb-2 leading-tight">
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {project.title}
             </h3>
-            <p class="text-white/70 text-sm leading-relaxed mb-4 {i === 0 ? 'max-w-md' : ''}">
+            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 max-w-xs mx-auto">
               {project.description}
             </p>
-
-            <!-- Tech pills -->
-            <div class="flex flex-wrap gap-2 mb-5">
-              {#each project.tech.slice(0, i === 0 ? 5 : 3) as tech}
-                <span class="px-2.5 py-1 bg-white/20 text-white text-xs font-semibold rounded-lg backdrop-blur-sm">
+            
+            <div class="mt-4 flex flex-wrap justify-center gap-2">
+              {#each project.tech.slice(0, 3) as tech}
+                <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
                   {tech}
                 </span>
               {/each}
             </div>
-
-            <!-- Links -->
-            <div
-              class="flex items-center gap-4"
-              on:click|stopPropagation
-              on:keydown|stopPropagation
-            >
-              {#if project.live}
-                
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-1.5 text-sm font-bold text-white hover:text-white/80 transition-colors"
-                >
-                  Live Demo
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/>
-                  </svg>
-                </a>
-              {/if}
-              {#if project.github}
-                
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-sm font-bold text-white/70 hover:text-white transition-colors"
-                >
-                  GitHub →
-                </a>
-              {/if}
-            </div>
           </div>
-
-          <!-- Hover overlay -->
-          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-        </article>
+        </button>
       {/each}
     </div>
   </div>
 </section>
 
-<!-- Project Detail Modal -->
 {#if selectedProject}
   <div
-    class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/70 backdrop-blur-md"
-    on:click={() => selectedProject = null}
-    on:keydown={(e) => e.key === 'Escape' && (selectedProject = null)}
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm"
+    onclick={() => selectedProject = null}
     role="dialog"
-    aria-modal="true"
-    aria-label={selectedProject.title}
-    tabindex="-1"
     transition:fade={{ duration: 200 }}
   >
     <div
-      class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
-      on:click|stopPropagation
-      on:keydown|stopPropagation
-      transition:fly={{ y: 50, duration: 300 }}
+      class="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col"
+      onclick={(e) => e.stopPropagation()}
+      transition:fly={{ y: 40, duration: 400 }}
     >
-      <!-- Modal hero -->
-      <div class="h-52 bg-gradient-to-br {selectedProject.color} rounded-t-3xl flex items-center justify-center text-7xl">
-        {selectedProject.emoji}
+      <div class="relative h-72 w-full">
+        <img src="{base}{selectedProject.image}" alt="" class="w-full h-full object-cover" />
+        <button
+            onclick={() => selectedProject = null}
+            class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md flex items-center justify-center transition-colors text-xl"
+          >✕</button>
       </div>
 
-      <div class="p-8">
-        <div class="flex items-start justify-between mb-4">
-          <div>
-            <span class="text-xs text-slate-400 uppercase tracking-widest">{selectedProject.year} · {selectedProject.category}</span>
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-1">{selectedProject.title}</h2>
-          </div>
-          <button
-            on:click={() => selectedProject = null}
-            class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-            aria-label="Close"
-          >✕</button>
-        </div>
+      <div class="p-10 text-center flex flex-col items-center">
+        <span class="text-xs text-indigo-500 font-black uppercase tracking-widest mb-2">{selectedProject.category}</span>
+        <h2 class="text-4xl font-black text-slate-900 dark:text-white mb-6">{selectedProject.title}</h2>
 
-        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-8 text-lg max-w-xl">
           {selectedProject.longDescription}
         </p>
 
-        <div class="mb-8">
-          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Tech Stack</h3>
-          <div class="flex flex-wrap gap-2">
-            {#each selectedProject.tech as tech}
-              <span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 text-sm font-semibold rounded-lg border border-indigo-100 dark:border-indigo-900">
-                {tech}
-              </span>
-            {/each}
-          </div>
-        </div>
-
-        <div class="flex gap-3">
+        <div class="flex gap-4 w-full max-w-md mt-4">
           {#if selectedProject.live}
-            
-              href={selectedProject.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl text-center transition-colors"
-            >
-              Live Demo →
+            <a href={selectedProject.live} target="_blank" class="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl text-center shadow-lg shadow-indigo-500/20 transition-all">
+              Live Demo
             </a>
           {/if}
           {#if selectedProject.github}
-            
-              href={selectedProject.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex-1 py-3.5 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-center hover:border-indigo-400 transition-colors"
-            >
+            <a href={selectedProject.github} target="_blank" class="flex-1 py-4 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
               GitHub
             </a>
           {/if}

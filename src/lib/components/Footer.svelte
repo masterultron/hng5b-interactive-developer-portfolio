@@ -9,6 +9,7 @@
       {#each [
         { href: 'https://github.com/masterultron', label: 'GitHub' },
         { href: 'https://www.linkedin.com/in/abdurrahaman-jamiu-14131524b/?utm_source=share_via&utm_content=profile&utm_medium=member_ios', label: 'LinkedIn' },
+        { href: 'https://www.instagram.com/theeabdurrahaman.dev?igsh=M3l2eHIyMWtra2hn&utm_source=qr', label: 'Instagram' },
         { href: 'mailto:abduurrahamanjamiu75@outlook.com', label: 'Email' },
       ] as link}
         
