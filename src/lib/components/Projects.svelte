@@ -1,114 +1,121 @@
 <script lang="ts">
   import { projects } from '$lib/data/projects';
   import type { Project } from '$lib/data/projects';
+  import { fade, fly } from 'svelte/transition';
 
   let activeFilter: string = 'all';
   let selectedProject: Project | null = null;
 
-  const filters = ['all', 'web', 'fullstack', 'tool', 'mobile'];
+  const filters = [
+    { id: 'all', label: 'All Work' },
+    { id: 'featured', label: 'Featured' },
+    { id: 'web', label: 'Web' },
+    { id: 'fullstack', label: 'Full Stack' },
+    { id: 'tool', label: 'Tools' },
+  ];
 
   $: filtered = activeFilter === 'all'
     ? projects
+    : activeFilter === 'featured'
+    ? projects.filter(p => p.featured)
     : projects.filter(p => p.category === activeFilter);
-
-  const categoryColors: Record<string, string> = {
-    web: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-    fullstack: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
-    tool: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-    mobile: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
-  };
 </script>
 
-<section id="projects" class="py-24 bg-white dark:bg-gray-950">
-  <div class="max-w-6xl mx-auto px-6">
+<section id="projects" class="bg-white dark:bg-[#0f172a]">
+  <div class="max-w-7xl mx-auto px-6 py-24 md:py-32">
+
     <!-- Header -->
-    <div class="text-center mb-16">
-      <span class="text-indigo-500 font-semibold text-sm uppercase tracking-widest">Portfolio</span>
-      <h2 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mt-2">
-        Featured Projects
-      </h2>
-      <p class="text-gray-500 dark:text-gray-500 mt-4 max-w-xl mx-auto">
-        Real projects built with real users in mind
-      </p>
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+      <div>
+        <span class="text-indigo-500 font-semibold text-sm uppercase tracking-[0.2em]">Selected Work</span>
+        <h2 class="text-5xl md:text-6xl font-black text-slate-900 dark:text-white mt-2 leading-tight">
+          Projects that<br />
+          <span class="gradient-text">ship & scale</span>
+        </h2>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2">
+        {#each filters as filter}
+          <button
+            on:click={() => activeFilter = filter.id}
+            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {
+              activeFilter === filter.id
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }"
+          >
+            {filter.label}
+          </button>
+        {/each}
+      </div>
     </div>
 
-    <!-- Filters -->
-    <div class="flex flex-wrap justify-center gap-3 mb-12">
-      {#each filters as filter}
-        <button
-          on:click={() => activeFilter = filter}
-          class="px-5 py-2 rounded-full text-sm font-medium capitalize transition-all {
-            activeFilter === filter
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-          }"
-        >
-          {filter}
-        </button>
-      {/each}
-    </div>
-
-    <!-- Projects grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {#each filtered as project (project.id)}
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-auto">
+      {#each filtered as project, i (project.id)}
         <article
-          class="group bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+          class="group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl {
+            i === 0 ? 'lg:col-span-2 lg:row-span-2' : ''
+          }"
+          style="min-height: {i === 0 ? '480px' : '280px'}"
           on:click={() => selectedProject = project}
           on:keydown={(e) => e.key === 'Enter' && (selectedProject = project)}
           tabindex="0"
           role="button"
-          aria-label="View {project.title} details"
+          aria-label="View {project.title}"
         >
-          <!-- Project image placeholder -->
-          <div class="h-48 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 dark:from-indigo-900/50 dark:to-purple-900/50 relative overflow-hidden">
-            <div class="absolute inset-0 flex items-center justify-center text-5xl opacity-30 group-hover:scale-110 transition-transform duration-500">
-              {#if project.category === 'web'}🌐
-              {:else if project.category === 'fullstack'}⚡
-              {:else if project.category === 'tool'}🔧
-              {:else}📱{/if}
-            </div>
-            {#if project.featured}
-              <span class="absolute top-3 right-3 px-2 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full">
-                Featured
-              </span>
-            {/if}
+          <!-- Background gradient -->
+          <div class="absolute inset-0 bg-gradient-to-br {project.color} opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
+
+          <!-- Noise texture -->
+          <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,...')" />
+
+          <!-- Big emoji -->
+          <div class="absolute top-6 right-6 text-5xl md:text-6xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500 select-none">
+            {project.emoji}
           </div>
 
-          <div class="p-6">
-            <!-- Category badge -->
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold capitalize mb-3 {categoryColors[project.category]}">
-              {project.category}
+          <!-- Content -->
+          <div class="relative z-10 p-7 h-full flex flex-col justify-end">
+            <!-- Year badge -->
+            <span class="inline-block mb-3 text-xs font-bold text-white/70 uppercase tracking-widest">
+              {project.year}
             </span>
 
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-500 transition-colors">
+            <h3 class="text-xl md:text-2xl font-black text-white mb-2 leading-tight">
               {project.title}
             </h3>
-            <p class="text-sm text-gray-500 dark:text-gray-500 mb-4 leading-relaxed">
+            <p class="text-white/70 text-sm leading-relaxed mb-4 {i === 0 ? 'max-w-md' : ''}">
               {project.description}
             </p>
 
-            <!-- Tech stack -->
-            <div class="flex flex-wrap gap-2 mb-4">
-              {#each project.tech.slice(0, 3) as tech}
-                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded-md">
+            <!-- Tech pills -->
+            <div class="flex flex-wrap gap-2 mb-5">
+              {#each project.tech.slice(0, i === 0 ? 5 : 3) as tech}
+                <span class="px-2.5 py-1 bg-white/20 text-white text-xs font-semibold rounded-lg backdrop-blur-sm">
                   {tech}
                 </span>
               {/each}
-              {#if project.tech.length > 3}
-                <span class="px-2 py-1 text-gray-400 text-xs">+{project.tech.length - 3}</span>
-              {/if}
             </div>
 
             <!-- Links -->
-            <div class="flex items-center gap-4" on:click|stopPropagation on:keydown|stopPropagation>
+            <div
+              class="flex items-center gap-4"
+              on:click|stopPropagation
+              on:keydown|stopPropagation
+            >
               {#if project.live}
                 
                   href={project.live}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-sm font-medium text-indigo-500 hover:text-indigo-600 transition-colors flex items-center gap-1"
+                  class="flex items-center gap-1.5 text-sm font-bold text-white hover:text-white/80 transition-colors"
                 >
-                  Live Demo →
+                  Live Demo
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/>
+                  </svg>
                 </a>
               {/if}
               {#if project.github}
@@ -116,74 +123,80 @@
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-sm font-medium text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                  class="text-sm font-bold text-white/70 hover:text-white transition-colors"
                 >
-                  GitHub
+                  GitHub →
                 </a>
               {/if}
             </div>
           </div>
+
+          <!-- Hover overlay -->
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
         </article>
       {/each}
     </div>
   </div>
 </section>
 
-<!-- Project Modal -->
+<!-- Project Detail Modal -->
 {#if selectedProject}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-black/70 backdrop-blur-md"
     on:click={() => selectedProject = null}
     on:keydown={(e) => e.key === 'Escape' && (selectedProject = null)}
     role="dialog"
     aria-modal="true"
     aria-label={selectedProject.title}
     tabindex="-1"
+    transition:fade={{ duration: 200 }}
   >
     <div
-      class="bg-white dark:bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 dark:border-gray-800"
+      class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
       on:click|stopPropagation
       on:keydown|stopPropagation
+      transition:fly={{ y: 50, duration: 300 }}
     >
-      <div class="h-48 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 dark:from-indigo-900/50 dark:to-purple-900/50 flex items-center justify-center text-6xl rounded-t-2xl">
-        {#if selectedProject.category === 'web'}🌐
-        {:else if selectedProject.category === 'fullstack'}⚡
-        {:else if selectedProject.category === 'tool'}🔧
-        {:else}📱{/if}
+      <!-- Modal hero -->
+      <div class="h-52 bg-gradient-to-br {selectedProject.color} rounded-t-3xl flex items-center justify-center text-7xl">
+        {selectedProject.emoji}
       </div>
 
       <div class="p-8">
         <div class="flex items-start justify-between mb-4">
-          <h2 class="text-2xl font-black text-gray-900 dark:text-white">{selectedProject.title}</h2>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-widest">{selectedProject.year} · {selectedProject.category}</span>
+            <h2 class="text-2xl font-black text-slate-900 dark:text-white mt-1">{selectedProject.title}</h2>
+          </div>
           <button
             on:click={() => selectedProject = null}
-            class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            aria-label="Close modal"
+            class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+            aria-label="Close"
           >✕</button>
         </div>
 
-        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
           {selectedProject.longDescription}
         </p>
 
-        <div class="mb-6">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Tech Stack</h3>
+        <div class="mb-8">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Tech Stack</h3>
           <div class="flex flex-wrap gap-2">
             {#each selectedProject.tech as tech}
-              <span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 text-sm font-medium rounded-lg border border-indigo-100 dark:border-indigo-900">
+              <span class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 text-sm font-semibold rounded-lg border border-indigo-100 dark:border-indigo-900">
                 {tech}
               </span>
             {/each}
           </div>
         </div>
 
-        <div class="flex gap-4">
+        <div class="flex gap-3">
           {#if selectedProject.live}
             
               href={selectedProject.live}
               target="_blank"
               rel="noopener noreferrer"
-              class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-center transition-colors"
+              class="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl text-center transition-colors"
             >
               Live Demo →
             </a>
@@ -193,7 +206,7 @@
               href={selectedProject.github}
               target="_blank"
               rel="noopener noreferrer"
-              class="flex-1 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-center hover:border-indigo-500 transition-colors"
+              class="flex-1 py-3.5 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-center hover:border-indigo-400 transition-colors"
             >
               GitHub
             </a>

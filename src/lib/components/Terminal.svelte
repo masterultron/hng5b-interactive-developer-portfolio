@@ -32,9 +32,9 @@
     about: () => [
       '👤 About Me',
       '──────────────────────────────────────',
-      'Name    : Your Full Name',
+      'Name    : Abdurrahaman Jamiu',
       'Title   : Frontend Engineer',
-      'Location: Lagos, Nigeria 🇳🇬',
+      'Location: Abuja, Nigeria 🇳🇬',
       'Status  : Available for work ✅',
       '',
       'I build immersive web experiences with',
@@ -68,9 +68,9 @@
       '📬 Contact',
       '──────────────────────────────────────',
       'Email  : you@email.com',
-      'GitHub : github.com/yourusername',
-      'Twitter: @yourusername',
-      'LinkedIn: linkedin.com/in/yourusername',
+      'GitHub : github.com/masterultron',
+      'Twitter: @j_abdvvl',
+      'LinkedIn: linkedin.com/in/abdurrahamanjamiu',
       '',
       '→ Open to freelance & full-time roles',
     ],
@@ -99,9 +99,9 @@
       lines = [];
       return '';
     },
-    whoami: () => 'yourname — frontend engineer',
+    whoami: () => 'Abdurrahaman — frontend engineer',
     date: () => new Date().toString(),
-    pwd: () => '/home/yourname/portfolio',
+    pwd: () => '/home/Abdurrahaman/portfolio',
     ls: () => ['about.txt', 'projects/', 'skills.json', 'resume.pdf', 'contact.md'],
   };
 
@@ -187,7 +187,7 @@
     // Boot sequence
     const bootLines = [
       { type: 'success' as const, text: '  ██████╗  ██████╗ ██████╗ ████████╗███████╗ ██████╗ ██╗     ██╗  ██████╗ ' },
-      { type: 'success' as const, text: 'Welcome to YourName Portfolio Terminal v1.0.0' },
+      { type: 'success' as const, text: 'Welcome to Abdurrahaman Portfolio Terminal v1.0.0' },
       { type: 'output' as const, text: '──────────────────────────────────────────────' },
       { type: 'output' as const, text: 'Type "help" to see available commands.' },
       { type: 'output' as const, text: '' },
@@ -246,7 +246,7 @@
         <!-- Input line -->
         <div class="flex items-center gap-2 text-indigo-400">
           <span class="flex-shrink-0">
-            <span class="text-green-400">yourname</span>
+            <span class="text-green-400">Abdurrahaman</span>
             <span class="text-gray-500">@</span>
             <span class="text-blue-400">portfolio</span>
             <span class="text-gray-500">:~$</span>

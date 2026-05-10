@@ -1,9 +1,13 @@
 <script lang="ts">
   import { theme } from '$lib/stores/theme';
   import { onMount } from 'svelte';
+  import { slide, fade } from 'svelte/transition';
 
-  let scrolled = false;
-  let menuOpen = false;
+  // Svelte 5 State Runes
+  let scrolled = $state(false);
+  let menuOpen = $state(false);
+  let isVisible = $state(true); 
+  let lastScrollY = $state(0);
 
   const navLinks = [
     { href: '#hero', label: 'Home' },
@@ -15,49 +19,67 @@
 
   onMount(() => {
     const handleScroll = () => {
-      scrolled = window.scrollY > 50;
+      // Prevent navbar from hiding if mobile menu is open
+      if (menuOpen) return;
+
+      const currentScrollY = window.scrollY;
+      
+      // Show/Hide logic
+      // If scrolling down and past 100px, hide. If scrolling up, show.
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        isVisible = false; 
+      } else {
+        isVisible = true; 
+      }
+
+      // Background glassmorphism effect
+      scrolled = currentScrollY > 50;
+      
+      lastScrollY = currentScrollY;
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
   function handleNav(href: string) {
     menuOpen = false;
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    isVisible = true; // Ensure nav stays visible after clicking
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 </script>
 
 <nav
-  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 {scrolled
-    ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-gray-800/50'
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 transform {isVisible ? 'translate-y-0' : '-translate-y-full'} {scrolled
+    ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-lg border-b border-slate-200/50 dark:border-slate-800/50'
     : 'bg-transparent'}"
 >
   <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-    <!-- Logo -->
-    
+    <a
       href="#hero"
-      on:click|preventDefault={() => handleNav('#hero')}
+      onclick={(e) => { e.preventDefault(); handleNav('#hero'); }}
       class="text-xl font-bold gradient-text"
     >
-      &lt;YourName /&gt;
+      Abdurrahaman 
     </a>
 
-    <!-- Desktop nav -->
     <div class="hidden md:flex items-center gap-8">
       {#each navLinks as link}
-        
+        <a
           href={link.href}
-          on:click|preventDefault={() => handleNav(link.href)}
-          class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
+          onclick={(e) => { e.preventDefault(); handleNav(link.href); }}
+          class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
         >
           {link.label}
         </a>
       {/each}
 
-      <!-- Theme toggle -->
       <button
-        on:click={() => theme.toggle()}
-        class="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        onclick={() => theme.toggle()}
+        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
         aria-label="Toggle theme"
       >
         {#if $theme === 'dark'}
@@ -68,36 +90,37 @@
       </button>
     </div>
 
-    <!-- Mobile menu button -->
     <div class="flex items-center gap-3 md:hidden">
       <button
-        on:click={() => theme.toggle()}
-        class="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+        onclick={() => theme.toggle()}
+        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center"
         aria-label="Toggle theme"
       >
         {$theme === 'dark' ? '☀️' : '🌙'}
       </button>
+      
       <button
-        on:click={() => (menuOpen = !menuOpen)}
-        class="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center gap-1.5"
+        onclick={() => (menuOpen = !menuOpen)}
+        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center gap-1.5 relative"
         aria-label="Toggle menu"
-        aria-expanded={menuOpen}
       >
-        <span class="w-5 h-0.5 bg-gray-700 dark:bg-gray-300 transition-all {menuOpen ? 'rotate-45 translate-y-2' : ''}" />
-        <span class="w-5 h-0.5 bg-gray-700 dark:bg-gray-300 transition-all {menuOpen ? 'opacity-0' : ''}" />
-        <span class="w-5 h-0.5 bg-gray-700 dark:bg-gray-300 transition-all {menuOpen ? '-rotate-45 -translate-y-2' : ''}" />
+        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? 'rotate-45 translate-y-2' : ''}" />
+        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? 'opacity-0' : ''}" />
+        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? '-rotate-45 -translate-y-2' : ''}" />
       </button>
     </div>
   </div>
 
-  <!-- Mobile menu -->
   {#if menuOpen}
-    <div class="md:hidden bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-6 py-4 space-y-3">
+    <div 
+      transition:slide={{ duration: 300 }}
+      class="md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-6 py-6 space-y-4 shadow-xl"
+    >
       {#each navLinks as link}
-        
+        <a
           href={link.href}
-          on:click|preventDefault={() => handleNav(link.href)}
-          class="block text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-500 py-2"
+          onclick={(e) => { e.preventDefault(); handleNav(link.href); }}
+          class="block text-base font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-500 py-2 border-b border-slate-50 dark:border-slate-900 last:border-0"
         >
           {link.label}
         </a>

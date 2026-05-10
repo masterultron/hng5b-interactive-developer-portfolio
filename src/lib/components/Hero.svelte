@@ -4,87 +4,100 @@
 
   let visible = false;
   let typewriterText = '';
-  let particleCanvas: HTMLCanvasElement;
+  let canvasEl: HTMLCanvasElement;
+  let mouseX = 0;
+  let mouseY = 0;
 
   const roles = [
     'Frontend Engineer',
-    'UI/UX Developer',
+    'UI/UX Developer', 
     'Full Stack Builder',
-    'Open Source Contributor',
+    'Creative Developer',
   ];
 
   let roleIndex = 0;
   let charIndex = 0;
   let deleting = false;
 
-  // Typewriter effect
   function typewrite() {
     const current = roles[roleIndex];
     if (!deleting) {
-      typewriterText = current.slice(0, charIndex + 1);
-      charIndex++;
+      typewriterText = current.slice(0, ++charIndex);
       if (charIndex === current.length) {
         deleting = true;
-        setTimeout(typewrite, 1800);
+        setTimeout(typewrite, 2000);
         return;
       }
     } else {
-      typewriterText = current.slice(0, charIndex - 1);
-      charIndex--;
+      typewriterText = current.slice(0, --charIndex);
       if (charIndex === 0) {
         deleting = false;
         roleIndex = (roleIndex + 1) % roles.length;
       }
     }
-    setTimeout(typewrite, deleting ? 60 : 100);
+    setTimeout(typewrite, deleting ? 50 : 90);
   }
 
-  // Particle animation
-  function initParticles() {
-    const canvas = particleCanvas;
+  function initCanvas() {
+    const canvas = canvasEl;
     const ctx = canvas.getContext('2d')!;
-    let particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
-    let animId: number;
+    let w = 0, h = 0;
+    let particles: {
+      x: number; y: number; ox: number; oy: number;
+      vx: number; vy: number; size: number; hue: number;
+    }[] = [];
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      w = canvas.width = canvas.offsetWidth;
+      h = canvas.height = canvas.offsetHeight;
+      createParticles();
     };
 
     const createParticles = () => {
-      particles = Array.from({ length: 80 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
-      }));
+      particles = Array.from({ length: 60 }, () => {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        return { x, y, ox: x, oy: y, vx: 0, vy: 0, size: Math.random() * 1.5 + 0.5, hue: Math.random() * 60 + 220 };
+      });
     };
 
+    let animId: number;
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, w, h);
       particles.forEach(p => {
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const repel = dist < 120;
+
+        if (repel) {
+          const force = (120 - dist) / 120;
+          p.vx -= (dx / dist) * force * 2;
+          p.vy -= (dy / dist) * force * 2;
+        }
+
+        p.vx += (p.ox - p.x) * 0.02;
+        p.vy += (p.oy - p.y) * 0.02;
+        p.vx *= 0.9;
+        p.vy *= 0.9;
         p.x += p.vx;
         p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(99, 102, 241, ${p.opacity})`;
+        ctx.fillStyle = `hsla(${p.hue}, 70%, 70%, 0.6)`;
         ctx.fill();
       });
 
       // Draw connections
       particles.forEach((a, i) => {
-        particles.slice(i + 1).forEach(b => {
-          const dist = Math.hypot(a.x - b.x, a.y - b.y);
-          if (dist < 100) {
+        particles.slice(i + 1, i + 5).forEach(b => {
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 80) {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 100)})`;
+            ctx.strokeStyle = `rgba(99,102,241,${0.15 * (1 - d / 80)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -95,127 +108,193 @@
     };
 
     resize();
-    createParticles();
     draw();
-    window.addEventListener('resize', () => { resize(); createParticles(); });
+    window.addEventListener('resize', resize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }
 
-    return () => cancelAnimationFrame(animId);
+  function handleMouseMove(e: MouseEvent) {
+    const rect = canvasEl?.getBoundingClientRect();
+    if (rect) {
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    }
   }
 
   onMount(() => {
     visible = true;
-    setTimeout(typewrite, 500);
-    const cleanup = initParticles();
+    setTimeout(typewrite, 800);
+    const cleanup = initCanvas();
     return cleanup;
   });
 </script>
 
 <section
   id="hero"
-  class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-gray-950"
+  class="relative min-h-screen flex items-center overflow-hidden mesh-gradient noise"
+  on:mousemove={handleMouseMove}
 >
-  <!-- Particle canvas -->
+  <!-- Interactive canvas -->
   <canvas
-    bind:this={particleCanvas}
-    class="absolute inset-0 w-full h-full opacity-60"
+    bind:this={canvasEl}
+    class="absolute inset-0 w-full h-full"
     aria-hidden="true"
   />
 
-  <!-- Gradient orbs -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full blur-3xl" />
-    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-3xl" />
-  </div>
+  <!-- Content -->
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
 
-  <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
-    {#if visible}
-      <!-- Status badge -->
-      <div
-        in:fly={{ y: -20, duration: 600, delay: 200 }}
-        class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-full px-4 py-1.5 text-sm text-indigo-600 dark:text-indigo-400 mb-8"
-      >
-        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        Available for work
-      </div>
-
-      <!-- Name -->
-      <h1
-        in:fly={{ y: 30, duration: 800, delay: 400 }}
-        class="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-4 leading-tight"
-      >
-        Hi, I'm <span class="gradient-text">Your Name</span>
-      </h1>
-
-      <!-- Typewriter role -->
-      <div
-        in:fly={{ y: 30, duration: 800, delay: 600 }}
-        class="text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-400 mb-6 h-10"
-      >
-        <span>{typewriterText}</span><span class="cursor-blink text-indigo-500">|</span>
-      </div>
-
-      <!-- Description -->
-      <p
-        in:fly={{ y: 30, duration: 800, delay: 800 }}
-        class="text-lg text-gray-500 dark:text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
-      >
-        I build immersive web experiences with modern tools.
-        Passionate about performance, accessibility, and beautiful interfaces
-        that feel as good as they look.
-      </p>
-
-      <!-- CTAs -->
-      <div
-        in:fly={{ y: 30, duration: 800, delay: 1000 }}
-        class="flex flex-wrap items-center justify-center gap-4 mb-12"
-      >
-        
-          href="#projects"
-          on:click|preventDefault={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
-          class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25"
-        >
-          View My Work
-        </a>
-        
-          href="/resume.pdf"
-          download
-          class="px-8 py-3.5 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:border-indigo-500 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105"
-        >
-          Download CV
-        </a>
-      </div>
-
-      <!-- Social links -->
-      <div
-        in:fade={{ duration: 800, delay: 1200 }}
-        class="flex items-center justify-center gap-6"
-      >
-        {#each [
-          { href: 'https://github.com/yourusername', label: 'GitHub', icon: '⌨️' },
-          { href: 'https://linkedin.com/in/yourusername', label: 'LinkedIn', icon: '💼' },
-          { href: 'https://twitter.com/yourusername', label: 'Twitter', icon: '🐦' },
-          { href: 'mailto:you@email.com', label: 'Email', icon: '✉️' },
-        ] as social}
-          
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
-            aria-label={social.label}
+      <!-- Left: Text content -->
+      <div>
+        {#if visible}
+          <!-- Availability badge -->
+          <div
+            in:fly={{ x: -30, duration: 700, delay: 200 }}
+            class="inline-flex items-center gap-2.5 glass rounded-full px-4 py-2 mb-8"
           >
-            <span>{social.icon}</span>
-            <span class="hidden sm:inline">{social.label}</span>
-          </a>
-        {/each}
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span class="text-sm text-slate-300 font-medium">Open to opportunities</span>
+          </div>
+
+          <!-- Main heading -->
+          <h1
+            in:fly={{ x: -30, duration: 700, delay: 400 }}
+            class="text-5xl md:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-tight mb-6"
+          >
+            Building<br />
+            <span class="gradient-text">digital</span><br />
+            experiences
+          </h1>
+
+          <!-- Typewriter -->
+          <div
+            in:fly={{ x: -30, duration: 700, delay: 600 }}
+            class="flex items-center gap-3 mb-6"
+          >
+            <span class="w-8 h-px bg-indigo-500"></span>
+            <span class="text-xl md:text-2xl text-indigo-400 font-semibold font-mono">
+              {typewriterText}<span class="cursor-blink"></span>
+            </span>
+          </div>
+
+          <!-- Description -->
+          <p
+            in:fly={{ x: -30, duration: 700, delay: 800 }}
+            class="text-lg text-slate-400 max-w-lg leading-relaxed mb-10"
+          >
+            I craft immersive web experiences where design meets engineering.
+            Specializing in React, Svelte, and modern tooling to build
+            products people love.
+          </p>
+
+          <!-- CTAs -->
+          <div
+            in:fly={{ x: -30, duration: 700, delay: 1000 }}
+            class="flex flex-wrap gap-4 mb-12"
+          >
+            
+              href="#projects"
+              on:click|preventDefault={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
+              class="group relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-105 glow overflow-hidden"
+            >
+              <span class="relative z-10">View Projects</span>
+              <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </a>
+            
+              href="#contact"
+              on:click|preventDefault={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+              class="px-8 py-4 glass text-white font-bold rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/20"
+            >
+              Get In Touch
+            </a>
+          </div>
+
+          <!-- Stats -->
+          <div
+            in:fade={{ duration: 700, delay: 1200 }}
+            class="flex items-center gap-8"
+          >
+            {#each [
+              { value: '7+', label: 'Projects Built' },
+              { value: '5', label: 'HNG Stages' },
+              { value: '100%', label: 'Passion' },
+            ] as stat}
+              <div class="text-center">
+                <div class="text-2xl font-black text-white">{stat.value}</div>
+                <div class="text-xs text-slate-500 uppercase tracking-wider">{stat.label}</div>
+              </div>
+            {/each}
+          </div>
+        {/if}
       </div>
-    {/if}
+
+      <!-- Right: Visual card stack -->
+      {#if visible}
+        <div
+          in:fly={{ x: 50, duration: 900, delay: 600 }}
+          class="hidden lg:flex items-center justify-center relative"
+        >
+          <!-- Floating tech cards -->
+          <div class="relative w-80 h-80">
+            <!-- Card 1 -->
+            <div class="absolute top-0 right-0 glass rounded-2xl p-5 w-44 animate-float-slow">
+              <div class="text-2xl mb-2">⚛️</div>
+              <div class="text-sm font-bold text-white">React</div>
+              <div class="text-xs text-slate-400">Expert Level</div>
+              <div class="mt-2 h-1 bg-slate-700 rounded-full">
+                <div class="h-1 bg-indigo-500 rounded-full w-[95%]" />
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="absolute bottom-8 left-0 glass rounded-2xl p-5 w-44 animate-float-medium">
+              <div class="text-2xl mb-2">🔥</div>
+              <div class="text-sm font-bold text-white">Svelte</div>
+              <div class="text-xs text-slate-400">Advanced</div>
+              <div class="mt-2 h-1 bg-slate-700 rounded-full">
+                <div class="h-1 bg-purple-500 rounded-full w-[80%]" />
+              </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass rounded-2xl p-5 w-40 animate-float-fast">
+              <div class="text-2xl mb-2">🔐</div>
+              <div class="text-sm font-bold text-white">Security</div>
+              <div class="text-xs text-slate-400">E2EE Expert</div>
+              <div class="mt-2 h-1 bg-slate-700 rounded-full">
+                <div class="h-1 bg-emerald-500 rounded-full w-[85%]" />
+              </div>
+            </div>
+          </div>
+        </div>
+      {/if}
+    </div>
   </div>
 
   <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400">
-    <span class="text-xs uppercase tracking-widest">Scroll</span>
-    <div class="w-5 h-8 border-2 border-gray-300 dark:border-gray-700 rounded-full flex justify-center pt-1.5">
-      <div class="w-1 h-2 bg-indigo-500 rounded-full animate-bounce" />
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500">
+    <div class="w-5 h-8 border border-slate-600 rounded-full flex justify-center pt-1.5">
+      <div class="w-0.5 h-2 bg-indigo-500 rounded-full animate-bounce" />
     </div>
   </div>
 </section>
+
+<style>
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes float-medium {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes float-fast {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-16px); }
+  }
+  .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+  .animate-float-medium { animation: float-medium 4s ease-in-out infinite 1s; }
+  .animate-float-fast { animation: float-fast 5s ease-in-out infinite 2s; }
+</style>

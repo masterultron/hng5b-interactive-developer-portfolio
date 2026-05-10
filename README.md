@@ -3,7 +3,7 @@
 A highly interactive developer portfolio built with SvelteKit and TailwindCSS.
 
 ## Live Demo
-[https://your-portfolio.vercel.app](https://your-portfolio.vercel.app)
+[https://your-portfolio.netlify.app](https://your-portfolio.netlify.app)
 
 ## Setup
 ```bash

@@ -1,5 +1,4 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+
 <script lang="ts">
   import { onMount } from 'svelte';
   import { theme } from '$lib/stores/theme';
@@ -17,9 +16,9 @@
 </script>
 
 <svelte:head>
-  <title>Your Name — Frontend Engineer</title>
+  <title>Abdurrahaman Jamiu — Frontend Engineer</title>
   <meta name="description" content="Frontend engineer building immersive web experiences with React, Svelte, and modern tools." />
-  <meta property="og:title" content="Your Name — Frontend Engineer" />
+  <meta property="og:title" content="Abdurrahaman Jamiu— Frontend Engineer" />
   <meta property="og:description" content="Portfolio of a Frontend Engineer specializing in React, Svelte, and modern web technologies." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
