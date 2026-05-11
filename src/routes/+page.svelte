@@ -1,6 +1,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import AIAssistant from '$lib/components/AIAssistant.svelte';
   import { theme } from '$lib/stores/theme';
   import Navbar from '$lib/components/Navbar.svelte';
   import Hero from '$lib/components/Hero.svelte';
@@ -41,4 +42,5 @@
   </main>
 
   <Footer />
+  <AIAssistant />
 </div>
