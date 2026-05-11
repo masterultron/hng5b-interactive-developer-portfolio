@@ -1,13 +1,11 @@
 <script lang="ts">
   import { theme } from '$lib/stores/theme';
   import { onMount } from 'svelte';
-  import { slide, fade } from 'svelte/transition';
+  import { slide } from 'svelte/transition';
 
   // Svelte 5 State Runes
   let scrolled = $state(false);
   let menuOpen = $state(false);
-  let isVisible = $state(true); 
-  let lastScrollY = $state(0);
 
   const navLinks = [
     { href: '#hero', label: 'Home' },
@@ -19,23 +17,8 @@
 
   onMount(() => {
     const handleScroll = () => {
-      // Prevent navbar from hiding if mobile menu is open
-      if (menuOpen) return;
-
-      const currentScrollY = window.scrollY;
-      
-      // Show/Hide logic
-      // If scrolling down and past 100px, hide. If scrolling up, show.
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        isVisible = false; 
-      } else {
-        isVisible = true; 
-      }
-
-      // Background glassmorphism effect
-      scrolled = currentScrollY > 50;
-      
-      lastScrollY = currentScrollY;
+      // Only keep the glassmorphism effect logic
+      scrolled = window.scrollY > 20;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -44,87 +27,9 @@
 
   function handleNav(href: string) {
     menuOpen = false;
-    isVisible = true; // Ensure nav stays visible after clicking
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
   }
 </script>
-
-<nav
-  class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 transform {isVisible ? 'translate-y-0' : '-translate-y-full'} {scrolled
-    ? 'bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-lg border-b border-slate-200/50 dark:border-slate-800/50'
-    : 'bg-transparent'}"
->
-  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a
-      href="#hero"
-      onclick={(e) => { e.preventDefault(); handleNav('#hero'); }}
-      class="text-xl font-bold gradient-text"
-    >
-      Abdurrahaman 
-    </a>
-
-    <div class="hidden md:flex items-center gap-8">
-      {#each navLinks as link}
-        <a
-          href={link.href}
-          onclick={(e) => { e.preventDefault(); handleNav(link.href); }}
-          class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
-        >
-          {link.label}
-        </a>
-      {/each}
-
-      <button
-        onclick={() => theme.toggle()}
-        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-        aria-label="Toggle theme"
-      >
-        {#if $theme === 'dark'}
-          <span class="text-lg">☀️</span>
-        {:else}
-          <span class="text-lg">🌙</span>
-        {/if}
-      </button>
-    </div>
-
-    <div class="flex items-center gap-3 md:hidden">
-      <button
-        onclick={() => theme.toggle()}
-        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center"
-        aria-label="Toggle theme"
-      >
-        {$theme === 'dark' ? '☀️' : '🌙'}
-      </button>
-      
-      <button
-        onclick={() => (menuOpen = !menuOpen)}
-        class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center gap-1.5 relative"
-        aria-label="Toggle menu"
-      >
-        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? 'rotate-45 translate-y-2' : ''}" />
-        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? 'opacity-0' : ''}" />
-        <span class="w-5 h-0.5 bg-slate-700 dark:bg-slate-300 transition-all duration-300 {menuOpen ? '-rotate-45 -translate-y-2' : ''}" />
-      </button>
-    </div>
-  </div>
-
-  {#if menuOpen}
-    <div 
-      transition:slide={{ duration: 300 }}
-      class="md:hidden bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-6 py-6 space-y-4 shadow-xl"
-    >
-      {#each navLinks as link}
-        <a
-          href={link.href}
-          onclick={(e) => { e.preventDefault(); handleNav(link.href); }}
-          class="block text-base font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-500 py-2 border-b border-slate-50 dark:border-slate-900 last:border-0"
-        >
-          {link.label}
-        </a>
-      {/each}
-    </div>
-  {/if}
-</nav>

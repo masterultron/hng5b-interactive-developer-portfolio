@@ -196,7 +196,7 @@
             class="text-lg text-slate-400 max-w-lg leading-relaxed mb-10 mx-auto lg:mx-0"
           >
             I craft immersive web experiences where design meets engineering.
-            Specializing in React, Svelte, and modern tooling to build
+            Specializing in React, Next, Svelte, and modern tooling to build
             products people love.
           </p>
 
