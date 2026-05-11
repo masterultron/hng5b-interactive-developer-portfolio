@@ -77,7 +77,7 @@ export const projects: Project[] = [
     tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'Tailwind'],
     category: 'fullstack',
     github: 'https://github.com/yourusername/library',
-    image: 'projects/library.png',
+    image: '/projects/library.png',
     featured: true,
   },
   {
