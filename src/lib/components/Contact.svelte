@@ -25,7 +25,7 @@
 
     const subject = encodeURIComponent(`Portfolio Contact from ${name}`);
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-    window.open(`mailto:abduurrahamanjamiu75@outlook.com?subject=${subject}&body=${body}`);
+    window.open(`mailto:abdurrahamanjamiu75@outlook.com?subject=${subject}&body=${body}`);
 
     status = 'success';
     name = ''; email = ''; message = '';
@@ -124,7 +124,7 @@
       <!-- Social Links -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full max-w-4xl">
         {#each [
-          { icon: '✉️', label: 'Email', value: 'Mail', href: 'mailto:abduurrahamanjamiu75@outlook.com' },
+          { icon: '✉️', label: 'Email', value: 'Mail', href: 'mailto:abdurrahamanjamiu75@outlook.com' },
           { icon: '💼', label: 'LinkedIn', value: 'LinkedIn', href: 'https://www.linkedin.com/in/abdurrahaman-jamiu-14131524b/' },
           { icon: '📸', label: 'Instagram', value: 'Instagram', href: 'https://www.instagram.com/theeabdurrahaman.dev?igsh=M3l2eHIyMWtra2hn&utm_source=qr' },
           { icon: '⌨️', label: 'GitHub', value: 'GitHub', href: 'https://github.com/masterultron' },
