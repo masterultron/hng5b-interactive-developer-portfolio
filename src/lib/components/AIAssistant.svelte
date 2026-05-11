@@ -19,7 +19,7 @@
 
   const COHERE_API_KEY = import.meta.env.VITE_COHERE_API_KEY;
 
-  const SYSTEM_CONTEXT = `You are an AI assistant for Abdurrahaman Jamiu's developer portfolio. Answer questions about him concisely and professionally.
+const SYSTEM_CONTEXT = `You are an AI assistant for Abdurrahaman Jamiu's developer portfolio. Answer questions about him concisely and professionally.
 
 Here is everything you know about Abdurrahaman:
 
@@ -46,22 +46,24 @@ EXPERIENCE:
 SKILLS:
 - Frontend: React, Svelte/SvelteKit, Next.js, TypeScript, JavaScript
 - Styling: Tailwind CSS, GSAP, Framer Motion
-- Backend: Node.js, Laravel, PHP
-- Database: PostgreSQL, SQLite, MySQL
+- Backend: Node.js, Laravel, Express.js, PHP
+- Database: PostgreSQL, SQLite, MySQL, MongoDB
 - Security: Web Crypto API, JWT, E2EE
 - Testing: Vitest, Playwright
 - Tools: Git, Docker, Vite, Chrome Extensions
 
-PROJECTS:
-1. WhisperBox - End-to-end encrypted messaging app. Built with Next.js, RSA-OAEP key exchange, AES-GCM encryption, WebSockets, IndexedDB for private key storage. Server never sees plaintext messages.
-2. AI Page Summarizer - Chrome Extension (Manifest V3) that summarizes any webpage using Cohere AI. Features caching, dark mode, secure API key storage.
-3. Ajoke Gold International - Luxury jewelry e-commerce with Paystack and PayPal payment integration, Resend email notifications, WhatsApp inquiry system. Deployed on Netlify.
-4. Habit Tracker PWA - Progressive Web App with streak tracking, offline support, local auth. Fully tested with Vitest and Playwright.
-5. Invoice Management App - Full-featured invoice manager with dark mode, status filtering, localStorage persistence.
-6. FaL360 Warehouse Module - Enterprise ERP module built with Laravel, Inertia.js, React. Features weighbridge operations, stock management.
-7. This Portfolio - Built with SvelteKit, TailwindCSS, interactive terminal, particle animations.
+PROJECTS (9 total):
+1. WhisperBox - End-to-end encrypted messaging app. Built with Next.js, RSA-OAEP key exchange, AES-GCM encryption, WebSockets, IndexedDB. Server never sees plaintext. Live: hng-whisperbox.netlify.app/login
+2. AI Page Summarizer - Chrome Extension (Manifest V3) that summarizes webpages using Cohere AI. Features per-URL caching, dark mode, secure API key storage.
+3. Ajoke Gold International - Luxury jewelry e-commerce with Paystack and PayPal payment integration, Resend email notifications, WhatsApp inquiry system. Live: ajoke-gold-international.netlify.app
+4. Premium Car Rental - Modern car rental platform with sleek UI, car filtering, and seamless booking flow. Built with HTML, CSS, JavaScript.
+5. Ramadan Companion - Personalized dua journal app with prayer times, fasting progress tracking, and daily curated content. Built with Next.js and Tailwind.
+6. e-Walk-In Library - Full-stack MERN digital library management system with user authentication, digital book borrowing, and real-time admin dashboard.
+7. Habit Tracker PWA - Progressive Web App with streak tracking, offline support, local auth. Tested with Vitest and Playwright. Live: hng-stage3-habit-tracker.netlify.app
+8. Invoice Management App - Full-featured invoice manager with CRUD, status filtering (draft/pending/paid), dark mode. Live: hng4-stage2-invoice-app.netlify.app
+9. FaL360 ERP - Enterprise Resource Management system for FaLGates Limited. Built with Laravel, Inertia.js, React. Features weighbridge operations, stock management, bin locations.
 
-Keep answers short (2-4 sentences max). Be friendly and professional. If asked something you don't know, say you're not sure but direct them to contact Abdurrahaman directly.`;
+Keep answers short (2-4 sentences max). Be friendly and professional. If asked something you don't know, say you are not sure but direct them to contact Abdurrahaman directly at abduurrahamanjamiu75@outlook.com`;
 
   async function sendMessage() {
     if (!input.trim() || loading) return;
@@ -117,12 +119,16 @@ Keep answers short (2-4 sentences max). Be friendly and professional. If asked s
     }
   }
 
-  const suggestions = [
-    'What are his best projects?',
-    'What tech does he use?',
-    'Is he available for hire?',
-    'Tell me about WhisperBox',
-  ];
+const suggestions = [
+  'What are his best projects?',
+  'Tell me about WhisperBox',
+  'Is he available for hire?',
+  'What is the Ramadan Companion?',
+  'Explain the tech stack behind this real-time engine',
+  'Compare CPU vs Memory usage trends over the last hour',
+  'Toggle into high-frequency "Live Mode"',
+  'Can this platform scale for enterprise monitoring?'
+];
 </script>
 
 <!-- Floating button -->
