@@ -197,7 +197,7 @@
           >
             I craft immersive web experiences where design meets engineering.
             Specializing in React, Next, Svelte, and modern tooling to build
-            products people love.
+            products people love and admire, tailored to the clients needs.
           </p>
 
           <!-- CTAs (Centered grouping) -->
