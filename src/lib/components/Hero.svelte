@@ -11,7 +11,7 @@
 
   const roles = [
     'Frontend Engineer', 
-    'Partly Full Stack',
+    'Aspiring Full Stack',
     'Creative Developer',
   ];
 
@@ -151,10 +151,9 @@
   ></canvas>
 
   <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-24 pb-12">
-    <!-- Grid alignment updated to justify-items-center -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center justify-items-center min-h-[80vh]">
 
-      <!-- Left: Text content (Centralized on mobile/tablet, aligned on desktop) -->
+      <!-- Left: Text content -->
       <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
         {#if visible}
           <!-- Availability badge -->
@@ -179,7 +178,7 @@
             experiences
           </h1>
 
-          <!-- Typewriter (Centralized alignment) -->
+          <!-- Typewriter -->
           <div
             in:fly={{ y: 20, duration: 700, delay: 600 }}
             class="flex items-center justify-center lg:justify-start gap-3 mb-6"
@@ -190,7 +189,7 @@
             </span>
           </div>
 
-          <!-- Description (mx-auto for centering) -->
+          <!-- Description -->
           <p
             in:fly={{ y: 20, duration: 700, delay: 800 }}
             class="text-lg text-slate-400 max-w-lg leading-relaxed mb-10 mx-auto lg:mx-0"
@@ -200,7 +199,7 @@
             products people love and admire, tailored to the clients needs.
           </p>
 
-          <!-- CTAs (Centered grouping) -->
+          <!-- CTAs -->
           <div
             in:fly={{ y: 20, duration: 700, delay: 1000 }}
             class="flex flex-wrap justify-center lg:justify-start gap-4 mb-12"
@@ -214,6 +213,7 @@
               <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
             
+            <!-- GET IN TOUCH BUTTON -->
             <a
               href="#contact"
               onclick={(e) => { e.preventDefault(); document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }); }}
@@ -221,9 +221,22 @@
             >
               Get In Touch
             </a>
+
+            <!-- CV DOWNLOAD BUTTON -->
+            <a
+              href="/resume.pdf" 
+              download="Abdurrahaman_Jamiu_CV.pdf"
+              target="_blank"
+              class="px-8 py-4 glass text-white font-bold rounded-2xl hover:bg-white/10 transition-all duration-300 hover:scale-105 border border-white/20 flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download CV
+            </a>
           </div>
 
-          <!-- Stats (Centered row) -->
+          <!-- Stats -->
           <div
             in:fade={{ duration: 700, delay: 1200 }}
             class="flex items-center justify-center lg:justify-start gap-8"
