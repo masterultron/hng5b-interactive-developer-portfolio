@@ -191,14 +191,31 @@ function getHardcodedAnswer(question: string): string | null {
             <p class="text-white/70 text-xs leading-tight">Ask about Abdurrahaman</p>
           </div>
         </div>
-        <button
-          onclick={() => isOpen = false}
-          class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm transition-colors leading-none"
-          aria-label="Close chat"
-        >
-          ✕
-        </button>
-      </div>
+        <div class="flex items-center gap-2">
+  <button
+    onclick={() => {
+      messages = [{
+        role: 'assistant',
+        content: "Hi! I'm Abdurrahaman's AI assistant 👋 Ask me anything about his skills, projects, or experience.",
+      }];
+    }}
+    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+    aria-label="Clear conversation"
+    title="Clear chat"
+  >
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+    </svg>
+  </button>
+  <button
+    onclick={() => isOpen = false}
+    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm transition-colors leading-none"
+    aria-label="Close chat"
+  >
+    ✕
+  </button>
+</div>
 
       <!-- Messages area -->
       <div
