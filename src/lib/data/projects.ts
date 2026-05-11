@@ -21,7 +21,7 @@ export const projects: Project[] = [
     category: 'fullstack',
     live: 'https://hng-whisperbox.netlify.app/login',
     github: 'https://github.com/yourusername/whisperbox',
-    image: 'projects/whisperbox.png',
+    image: '/projects/whisperbox.png',
     featured: true,
   },
   {
@@ -32,7 +32,7 @@ export const projects: Project[] = [
     tech: ['Chrome Extension', 'JavaScript', 'Cohere AI', 'Manifest V3'],
     category: 'tool',
     github: 'https://github.com/yourusername/ai-page-summarizer',
-    image: 'projects/ai-summarizer.png',
+    image: '/projects/ai-summarizer.png',
     featured: true,
   },
   {
@@ -44,7 +44,7 @@ export const projects: Project[] = [
     category: 'web',
     live: 'https://ajoke-gold-international.netlify.app/',
     github: 'https://github.com/yourusername/ajoke-gold',
-    image: 'projects/ajoke-gold.png',
+    image: '/projects/ajoke-gold.png',
     featured: true,
   },
   {
@@ -55,7 +55,7 @@ export const projects: Project[] = [
     tech: ['HTML', 'CSS', 'JavaScript'],
     category: 'web',
     github: 'https://github.com/yourusername/car-rental',
-    image: 'projects/rental.png',
+    image: '/projects/rental.png',
     featured: true,
   },
   {
@@ -66,7 +66,7 @@ export const projects: Project[] = [
     tech: ['Next.js', 'React', 'Tailwind', 'TypeScript'],
     category: 'web',
     github: 'https://github.com/yourusername/ramadan-companion',
-    image: 'projects/ramadan.png',
+    image: '/projects/ramadan.png',
     featured: true,
   },
   {
@@ -89,7 +89,7 @@ export const projects: Project[] = [
     category: 'web',
     live: 'https://hng-stage3-habit-tracker.netlify.app/login',
     github: 'https://github.com/yourusername/habit-tracker',
-    image: 'projects/habit-tracker.png',
+    image: '/projects/habit-tracker.png',
     featured: false,
   },
   {
@@ -101,7 +101,7 @@ export const projects: Project[] = [
     category: 'web',
     live: 'https://hng4-stage2-invoice-app.netlify.app/',
     github: 'https://github.com/yourusername/invoice-app',
-    image: 'projects/invoice-app.png',
+    image: '/projects/invoice-app.png',
     featured: false,
   },
   {
@@ -112,7 +112,7 @@ export const projects: Project[] = [
     tech: ['Laravel', 'React', 'Inertia.js', 'TypeScript', 'Tailwind'],
     category: 'fullstack',
     github: 'https://github.com/yourusername/fal360',
-    image: 'projects/fal360.png',
+    image: '/projects/fal360.png',
     featured: false,
   },
 ];
