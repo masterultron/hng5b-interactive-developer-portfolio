@@ -66,7 +66,7 @@ export const projects: Project[] = [
     longDescription: 'A comprehensive spiritual companion app built with Next.js and Tailwind CSS. Features dynamic prayer times, progress tracking for fasting, and curated daily content.',
     tech: ['Next.js', 'React', 'Tailwind', 'TypeScript'],
     category: 'web',
-    live: 'my-ramadan-companion.netlify.app'
+    live: 'my-ramadan-companion.netlify.app',
     github: 'https://github.com/yourusername/ramadan-companion',
     image: '/projects/ramadan.png',
     featured: true,
