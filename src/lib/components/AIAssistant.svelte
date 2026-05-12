@@ -68,94 +68,98 @@ RULES:
 - If truly unrelated to Abdurrahaman, say "I can only answer questions about Abdurrahaman's portfolio"
 - Always encourage visitors to reach out at abduurrahamanjamiu75@outlook.com`;
 
-const hardcodedQA: Record<string, string> = {
-  "what are his best projects": "FaL360 ERP, Ajoke Gold International, WhisperBox, and the Ramadan Companion stand out as his most impactful work — spanning enterprise systems, e-commerce, encrypted messaging, and spiritual tech. Each one solves a real problem with production-grade engineering.",
-  "tell me about whisperbox": "WhisperBox is a secure messaging app where the server never sees plaintext. It uses RSA-OAEP for key exchange, AES-GCM for message encryption, and IndexedDB to store private keys — meaning only the intended recipient can ever decrypt a message. Built with Next.js, TypeScript, and the Web Crypto API.",
-  "is he available for hire": "Yes! Abdurrahaman is currently available for freelance and full-time roles. He's open to frontend, full-stack, and consulting work. Reach out at abduurrahamanjamiu75@outlook.com to discuss your project. 🚀",
-  "what is the ramadan companion": "Ramadan Companion is a personalized dua journal and spiritual companion app built with Next.js and Tailwind CSS. It features dynamic prayer times, fasting progress tracking, and curated daily Islamic content — designed to help users stay connected and informed about their duas and their meanings throughout Ramadan.",
-  "explain the tech stack behind this real-time engine": "For deep technical questions like this, Abdurrahaman would love to walk you through it personally. Reach out at abduurrahamanjamiu75@outlook.com or connect on LinkedIn at linkedin.com/in/abdurrahaman-jamiu-14131524b 💬",
-  "can this platform scale for enterprise monitoring": "That's a great architectural question that deserves a detailed conversation. Abdurrahaman has worked on enterprise-grade systems like FaL360 ERP for FaLGates Limited. Get in touch at abduurrahamanjamiu75@outlook.com to discuss your specific requirements. 🏢",
-};
+  const hardcodedQA: Record<string, string> = {
+    "what are his best projects": "FaL360 ERP, Ajoke Gold International, WhisperBox, and the Ramadan Companion stand out as his most impactful work — spanning enterprise systems, e-commerce, encrypted messaging, and spiritual tech. Each one solves a real problem with production-grade engineering.",
+    "tell me about whisperbox": "WhisperBox is a secure messaging app where the server never sees plaintext. It uses RSA-OAEP for key exchange, AES-GCM for message encryption, and IndexedDB to store private keys — meaning only the intended recipient can ever decrypt a message. Built with Next.js, TypeScript, and the Web Crypto API.",
+    "is he available for hire": "Yes! Abdurrahaman is currently available for freelance and full-time roles. He's open to frontend, full-stack, and consulting work. Reach out at abduurrahamanjamiu75@outlook.com to discuss your project. 🚀",
+    "what is the ramadan companion": "Ramadan Companion is a personalized dua journal and spiritual companion app built with Next.js and Tailwind CSS. It features dynamic prayer times, fasting progress tracking, and curated daily Islamic content — designed to help users stay connected and informed about their duas and their meanings throughout Ramadan.",
+    "explain the tech stack behind this real-time engine": "For deep technical questions like this, Abdurrahaman would love to walk you through it personally. Reach out at abduurrahamanjamiu75@outlook.com or connect on LinkedIn at linkedin.com/in/abdurrahaman-jamiu-14131524b 💬",
+    "can this platform scale for enterprise monitoring": "That's a great architectural question that deserves a detailed conversation. Abdurrahaman has worked on enterprise-grade systems like FaL360 ERP for FaLGates Limited. Get in touch at abduurrahamanjamiu75@outlook.com to discuss your specific requirements. 🏢",
+  };
 
-function getHardcodedAnswer(question: string): string | null {
-  const normalized = question.toLowerCase().trim().replace(/[?!.,]/g, '');
-  for (const [key, answer] of Object.entries(hardcodedQA)) {
-    if (normalized.includes(key) || key.includes(normalized)) {
-      return answer;
+  function getHardcodedAnswer(question: string): string | null {
+    const normalized = question.toLowerCase().trim().replace(/[?!.,]/g, '');
+    for (const [key, answer] of Object.entries(hardcodedQA)) {
+      if (normalized.includes(key) || key.includes(normalized)) {
+        return answer;
+      }
     }
+    return null;
   }
-  return null;
-}
 
   async function sendMessage() {
-  if (!input.trim() || loading) return;
+    if (!input.trim() || loading) return;
 
-  const userMessage = input.trim();
-  input = '';
-  messages = [...messages, { role: 'user', content: userMessage }];
+    const userMessage = input.trim();
+    input = '';
+    messages = [...messages, { role: 'user', content: userMessage }];
 
-  // Check hardcoded answers first — instant, no API call
-  const hardcoded = getHardcodedAnswer(userMessage);
-  if (hardcoded) {
-    setTimeout(() => {
-      messages = [...messages, { role: 'assistant', content: hardcoded }];
+    const hardcoded = getHardcodedAnswer(userMessage);
+    if (hardcoded) {
       setTimeout(() => {
-        chatEl?.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
-      }, 50);
-    }, 400); // small delay so it feels natural
-    return;
-  }
-
-  loading = true;
-  setTimeout(() => {
-    chatEl?.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
-  }, 50);
-
-  try {
-    const conversationHistory = messages.slice(1).map(m => ({
-      role: m.role,
-      content: m.content,
-    }));
-
-    const response = await fetch('https://api.cohere.com/v2/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${COHERE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'command-r',
-        messages: [
-          { role: 'system', content: SYSTEM_CONTEXT },
-          ...conversationHistory,
-          { role: 'user', content: userMessage },
-        ],
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'API error');
+        messages = [...messages, { role: 'assistant', content: hardcoded }];
+        setTimeout(() => {
+          chatEl?.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
+        }, 50);
+      }, 400);
+      return;
     }
 
-    const reply = data.message?.content?.[0]?.text ||
-      "I couldn't generate a response. Please try again.";
-
-    messages = [...messages, { role: 'assistant', content: reply }];
-  } catch (err) {
-    console.error('AI error:', err);
-    messages = [...messages, {
-      role: 'assistant',
-      content: "I'm having a connection issue. You can reach Abdurrahaman directly at abduurrahamanjamiu75@outlook.com",
-    }];
-  } finally {
-    loading = false;
+    loading = true;
     setTimeout(() => {
       chatEl?.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
     }, 50);
+
+    try {
+      const conversationHistory = messages.slice(1).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const response = await fetch('https://api.cohere.com/v2/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${COHERE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'command-r',
+          messages: [
+            { role: 'system', content: SYSTEM_CONTEXT },
+            ...conversationHistory,
+            { role: 'user', content: userMessage },
+          ],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'API error');
+      }
+
+      const reply =
+        data.message?.content?.[0]?.text ??
+        "I couldn't generate a response. Please try again.";
+
+      messages = [...messages, { role: 'assistant', content: reply }];
+    } catch (err) {
+      console.error('AI error:', err);
+      messages = [
+        ...messages,
+        {
+          role: 'assistant',
+          content:
+            "I'm having a connection issue. You can reach Abdurrahaman directly at abduurrahamanjamiu75@outlook.com",
+        },
+      ];
+    } finally {
+      loading = false;
+      setTimeout(() => {
+        chatEl?.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' });
+      }, 50);
+    }
   }
-}
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -165,11 +169,11 @@ function getHardcodedAnswer(question: string): string | null {
   }
 
   const suggestions = [
-  "What are his best projects?",
-  "Tell me about WhisperBox",
-  "Is he available for hire?",
-  "What is the Ramadan Companion?",
-];
+    "What are his best projects?",
+    "Tell me about WhisperBox",
+    "Is he available for hire?",
+    "What is the Ramadan Companion?",
+  ];
 </script>
 
 <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -180,8 +184,10 @@ function getHardcodedAnswer(question: string): string | null {
       class="w-80 md:w-96 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
       style="height: 500px;"
     >
+
       <!-- Header -->
       <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <!-- Left: avatar + name -->
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-base leading-none">
             🤖
@@ -191,31 +197,36 @@ function getHardcodedAnswer(question: string): string | null {
             <p class="text-white/70 text-xs leading-tight">Ask about Abdurrahaman</p>
           </div>
         </div>
+
+        <!-- Right: clear + close buttons -->
         <div class="flex items-center gap-2">
-  <button
-    onclick={() => {
-      messages = [{
-        role: 'assistant',
-        content: "Hi! I'm Abdurrahaman's AI assistant 👋 Ask me anything about his skills, projects, or experience.",
-      }];
-    }}
-    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-    aria-label="Clear conversation"
-    title="Clear chat"
-  >
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="1 4 1 10 7 10"/>
-      <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
-    </svg>
-  </button>
-  <button
-    onclick={() => isOpen = false}
-    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm transition-colors leading-none"
-    aria-label="Close chat"
-  >
-    ✕
-  </button>
-</div>
+          <button
+            onclick={() => {
+              messages = [{
+                role: 'assistant',
+                content: "Hi! I'm Abdurrahaman's AI assistant 👋 Ask me anything about his skills, projects, or experience.",
+              }];
+            }}
+            class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            aria-label="Clear conversation"
+            title="Clear chat"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+            </svg>
+          </button>
+
+          <button
+            onclick={() => isOpen = false}
+            class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-sm transition-colors leading-none"
+            aria-label="Close chat"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+      <!-- /Header -->
 
       <!-- Messages area -->
       <div
@@ -267,6 +278,7 @@ function getHardcodedAnswer(question: string): string | null {
           </div>
         {/if}
       </div>
+      <!-- /Messages area -->
 
       <!-- Input area -->
       <div class="p-3 border-t border-gray-100 dark:border-gray-800 flex-shrink-0">
@@ -293,13 +305,15 @@ function getHardcodedAnswer(question: string): string | null {
         </div>
         <p class="text-center text-[10px] text-gray-400 mt-1.5">Powered by Cohere AI</p>
       </div>
+      <!-- /Input area -->
+
     </div>
   {/if}
 
   <!-- Toggle button -->
   <button
     onclick={() => isOpen = !isOpen}
-    class="w-13 h-13 w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 active:scale-95"
+    class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center text-2xl transition-all duration-300 hover:scale-110 active:scale-95"
     aria-label="{isOpen ? 'Close' : 'Open'} AI assistant"
   >
     {#if isOpen}
@@ -308,4 +322,5 @@ function getHardcodedAnswer(question: string): string | null {
       <span transition:fade={{ duration: 150 }}>🤖</span>
     {/if}
   </button>
+
 </div>
