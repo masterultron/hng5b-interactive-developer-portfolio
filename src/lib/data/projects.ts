@@ -54,6 +54,7 @@ export const projects: Project[] = [
     longDescription: 'A high-performance landing page and booking system for a luxury car rental service. Features responsive design, car filtering, and a seamless reservation user experience.',
     tech: ['HTML', 'CSS', 'JavaScript'],
     category: 'web',
+    live: 'abdulscarrentalwebsite.netlify.app',
     github: 'https://github.com/yourusername/car-rental',
     image: '/projects/rental.png',
     featured: true,
@@ -65,6 +66,7 @@ export const projects: Project[] = [
     longDescription: 'A comprehensive spiritual companion app built with Next.js and Tailwind CSS. Features dynamic prayer times, progress tracking for fasting, and curated daily content.',
     tech: ['Next.js', 'React', 'Tailwind', 'TypeScript'],
     category: 'web',
+    live: 'my-ramadan-companion.netlify.app'
     github: 'https://github.com/yourusername/ramadan-companion',
     image: '/projects/ramadan.png',
     featured: true,
@@ -111,6 +113,7 @@ export const projects: Project[] = [
     longDescription: 'A full ERP system with multiple modules for FaLGates Limited built with Laravel, Inertia.js, and React. Features weighbridge operations, stock receipts, bin management.',
     tech: ['Laravel', 'React', 'Inertia.js', 'TypeScript', 'Tailwind'],
     category: 'fullstack',
+    live: '360.falgates.com',
     github: 'https://github.com/yourusername/fal360',
     image: '/projects/fal360.png',
     featured: false,
